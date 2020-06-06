@@ -1,19 +1,17 @@
-var flatten = require('flatten-vertex-data')
-var warned = false;
-
-module.exports.attr = setAttribute
-module.exports.index = setIndex
+import flatten from 'flatten-vertex-data'
+import { BufferAttribute } from 'three'
 
 function setIndex (geometry, data, itemSize, dtype) {
   if (typeof itemSize !== 'number') itemSize = 1
   if (typeof dtype !== 'string') dtype = 'uint16'
 
-  var isR69 = !geometry.index && typeof geometry.setIndex !== 'function'
-  var attrib = isR69 ? geometry.getAttribute('index') : geometry.index
-  var newAttrib = updateAttribute(attrib, data, itemSize, dtype)
-  if (newAttrib) {
-    if (isR69) geometry.addAttribute('index', newAttrib)
-    else geometry.index = newAttrib
+  const attrib = updateAttribute(data, itemSize, dtype)
+  if (attrib) {
+    if (!geometry.index && typeof geometry.setIndex !== 'function') {
+      geometry.addAttribute('index', attrib)
+    } else {
+      geometry.index = attrib
+    }
   }
 }
 
@@ -27,36 +25,21 @@ function setAttribute (geometry, key, data, itemSize, dtype) {
       itemSize + ' but found ' + data[0].length)
   }
 
-  var attrib = geometry.getAttribute(key)
-  var newAttrib = updateAttribute(attrib, data, itemSize, dtype)
-  geometry.setAttribute(key, newAttrib)
+  const attrib = updateAttribute(data, itemSize, dtype)
+  geometry.setAttribute(key, attrib)
 }
 
-function updateAttribute (attrib, data, itemSize, dtype) {
+function updateAttribute (data, itemSize, dtype) {
   data = data || []
 
   // create a new array with desired type
   data = flatten(data, dtype)
 
-  attrib = new THREE.BufferAttribute(data, itemSize);
+  const attrib = new BufferAttribute(data, itemSize);
   attrib.itemSize = itemSize;
   attrib.needsUpdate = true;
 
   return attrib
 }
 
-// Test whether the attribute needs to be re-created,
-// returns false if we can re-use it as-is.
-function rebuildAttribute (attrib, data, itemSize) {
-  if (attrib.itemSize !== itemSize) return true
-  if (!attrib.array) return true
-  var attribLength = attrib.array.length
-  if (Array.isArray(data) && Array.isArray(data[0])) {
-    // [ [ x, y, z ] ]
-    return attribLength !== data.length * itemSize
-  } else {
-    // [ x, y, z ]
-    return attribLength !== data.length
-  }
-  return false
-}
+export { setIndex as index, setAttribute as attr }

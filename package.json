@@ -2,37 +2,38 @@
   "name": "three-buffer-vertex-data",
   "version": "1.1.0",
   "description": "an easy way to set vertex data on a BufferGeometry",
-  "main": "index.js",
+  "source": "index.js",
+  "main": "dist/three-buffer-vertex-data.js",
+  "umd:main": "dist/three-buffer-vertex-data.umd.js",
+  "module": "dist/three-buffer-vertex-data.module.js",
+  "esmodule": "dist/three-buffer-vertex-data.modern.js",
   "license": "MIT",
   "author": {
     "name": "Matt DesLauriers",
     "email": "dave.des@gmail.com",
     "url": "https://github.com/mattdesl"
   },
+  "peerDependencies": {
+    "three": ">=0.116.1"
+  },
   "dependencies": {
-    "flatten-vertex-data": "^1.0.0"
+    "flatten-vertex-data": "^1.0.2"
   },
   "devDependencies": {
     "baboon-image-uri": "^1.0.1",
-    "browserify": "^12.0.1",
-    "budo": "^7.0.0",
-    "img": "^1.0.0",
-    "primitive-quad": "^1.0.1",
-    "primitive-sphere": "^2.0.0",
+    "budo": "^11.6.3",
+    "img": "^3.0.3",
+    "microbundle": "^0.12.0",
+    "primitive-quad": "^2.0.0",
+    "primitive-sphere": "^3.0.0",
     "primitive-torus": "^1.0.4",
-    "three": "^0.111.0",
-    "three-orbit-viewer": "^69.3.1",
-    "uglify-js": "^2.6.1"
+    "three": "^0.116.1",
+    "three-orbit-viewer": "^69.3.1"
   },
   "scripts": {
     "test": "node test.js",
     "start": "budo demo/index.js:bundle.js --live",
-    "build": "browserify demo/index.js | uglifyjs -cm > bundle.js"
-  },
-  "standard": {
-    "globals": [
-      "THREE"
-    ]
+    "dist": "microbundle --target web --external three"
   },
   "keywords": [
     "buffer",
